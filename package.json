@@ -4,6 +4,8 @@
     "start": "NODE_ENV=production bun src/index.ts"
   },
   "dependencies": {
+    "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/openapi": "^1.4.11",
     "elysia": "1.4.15",
     "openai": "^6.9.0"
   },
