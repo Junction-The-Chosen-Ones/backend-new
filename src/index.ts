@@ -1,9 +1,10 @@
-import { Elysia } from "elysia";
-import { gen } from "./router/generation.router";
 import cors from "@elysiajs/cors";
 import openapi from "@elysiajs/openapi";
-import { dataStore } from "./utils/memory_storage";
+import { Elysia } from "elysia";
 import { cards } from "./router/cards.router";
+import { gen } from "./router/generation.router";
+import { ping } from "./router/ping.route";
+import { dataStore } from "./utils/memory_storage";
 
 const port = process.env.PORT || 3000;
 async function fu() {
@@ -23,11 +24,12 @@ function main(): void {
     .use(cors())
     .use(cards)
     .use(gen) // your /gen routes
+    .use(ping) // /ping and only ping
     .get("/", () => "Hello Elysia")
     .listen(port);
 
   console.log(
-    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`,
+    `🦊 Elysia is running at ${app.server?.hostname}:${app.server?.port}`
   );
 }
 
