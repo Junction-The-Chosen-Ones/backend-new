@@ -2,13 +2,12 @@ import Elysia from "elysia";
 import { dataStore } from "../utils/memory_storage";
 
 // Initialize story at startup
-
 export const gen = new Elysia({ prefix: "/gen" })
   // Return full story
   .get("/full-story", ({ set }) => {
     try {
       const data = dataStore.getInstance();
-      return { data };
+      return { data: data.story };
     } catch (error) {
       set.status = 500;
       return { error: "Story not ready", details: String(error) };
@@ -18,8 +17,8 @@ export const gen = new Elysia({ prefix: "/gen" })
   // Return only entities
   .get("/entities", ({ set }) => {
     try {
-      const { entities } = dataStore.getInstance();
-      return { entities };
+      const { story } = dataStore.getInstance();
+      return { entities: story.entities };
     } catch (error) {
       set.status = 500;
       return { error: "Entities not ready", details: String(error) };
@@ -29,8 +28,8 @@ export const gen = new Elysia({ prefix: "/gen" })
   // Return only intro/context
   .get("/intro", ({ set }) => {
     try {
-      const { context } = dataStore.getInstance();
-      return { context };
+      const { story } = dataStore.getInstance();
+      return { context: story.context };
     } catch (error) {
       set.status = 500;
       return { error: "Intro not ready", details: String(error) };
@@ -40,8 +39,8 @@ export const gen = new Elysia({ prefix: "/gen" })
   // Return only dialogs
   .get("/dialogs", ({ set }) => {
     try {
-      const { dialogs } = dataStore.getInstance();
-      return { dialogs };
+      const { story } = dataStore.getInstance();
+      return { dialogs: story.dialogs };
     } catch (error) {
       set.status = 500;
       return { error: "Dialogs not ready", details: String(error) };
@@ -52,12 +51,7 @@ export const gen = new Elysia({ prefix: "/gen" })
   .post("/reset", async ({ set }) => {
     try {
       const reset = await dataStore.reset();
-      const init = await dataStore
-        .initialize()
-        .then(() => console.log("Reinit the data initialized at startup"))
-        .catch((err) => console.error("Failed to initialize story", err));
-
-      return { init };
+      return { reset };
     } catch (error) {
       set.status = 500;
       return { error: "Failed to reset story", details: String(error) };

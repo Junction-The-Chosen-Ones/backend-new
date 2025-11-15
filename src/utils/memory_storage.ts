@@ -1,8 +1,11 @@
 // utils/memory_storage.ts
-import { Story, Entity, Dialog } from "../models/models";
-import { generateStory } from "../services/generation.service";
+import { Story, Card } from "../models/models";
+import { generateCards, generateStory } from "../services/generation.service";
 
-type DataInstance = Story;
+type DataInstance = {
+  story: Story;
+  cards: Card[];
+};
 
 class DataStore {
   private instance: DataInstance | null = null;
@@ -10,11 +13,14 @@ class DataStore {
 
   // Initialize at startup
   async initialize(): Promise<DataInstance> {
-    if (!this.instance && !this.initializing) {
-      this.initializing = (async () => {
-        this.instance = await generateStory();
-      })();
-
+    if (!this.instance) {
+      if (!this.initializing) {
+        this.initializing = (async () => {
+          const story = await generateStory();
+          const cards = await generateCards();
+          this.instance = { story, cards };
+        })();
+      }
       await this.initializing;
       this.initializing = null;
     }

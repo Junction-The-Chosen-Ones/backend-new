@@ -1,6 +1,6 @@
 // generation.service.ts
 import { generateText, prompts } from "../utils/prompts";
-import { Entity, Dialog, Story } from "../models/models";
+import { Entity, Dialog, Story, Card } from "../models/models";
 import { extractJsonArray } from "../utils/json_utils";
 
 // ------------------------------
@@ -84,3 +84,30 @@ export const generateStory = async (): Promise<Story> => {
     throw err;
   }
 };
+
+function parseCards(raw: string): Card[] {
+  // Remove any trailing commas, extra newlines
+  const cleaned = raw
+    .replace(/\r\n/g, "\n")
+    .replace(/\n/g, " ")
+    .replace(/,\s*]/g, "]") // remove trailing commas
+    .replace(/,\s*}/g, "}");
+
+  try {
+    // Wrap each card fragment into an object if necessary
+    // Use regex to find keys and wrap into object
+    // This assumes GPT outputs keys sequentially like:
+    // "name": "...", "cardType": [...], "damageType": [...], ...
+    const jsonString = `[${cleaned}]`;
+    return JSON.parse(jsonString) as Card[];
+  } catch (err) {
+    console.error("Failed to parse entities JSON:", cleaned);
+    throw err;
+  }
+}
+
+export async function generateCards(): Promise<Card[]> {
+  const entitiesRaw = await generateText(prompts.cards_prompt);
+  console.log(entitiesRaw);
+  return parseCards(entitiesRaw);
+}

@@ -24,3 +24,28 @@ export interface Story {
   dialogs: Dialog[];
   context: string;
 }
+// Enums
+export enum ActionType {
+  Attack = "attack",
+  Defend = "defend",
+  Heal = "heal",
+  Special = "special",
+}
+
+export enum DamageType {
+  Physical = "physical",
+  Elemental = "elemental",
+  Holy = "holy",
+  Dark = "dark",
+}
+
+// Interface for Card
+export interface Card {
+  name: string;
+  desc: string;
+  cost: number;
+  cardType: ActionType[];
+  damageType: DamageType[];
+  amount: number[];
+  spriteLink: string;
+}

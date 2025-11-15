@@ -21,6 +21,29 @@ export const prompts = {
     characterId: string;
     content: string;
   }`,
+  cards_prompt: `Generate 30 cards with the following properties as a JSON object:
+{
+name: string;
+desc: string;
+cost: number;
+cardType: ActionType[];
+damageType: DamageType[];
+amount: number[];
+spriteLink: string;}
+and here are action types and damage types:
+{
+  Attack = "attack",
+  Defend = "defend",
+  Heal = "heal",
+  Special = "special",
+}
+{
+  Physical = "physical",
+  Elemental = "elemental",
+  Holy = "holy",
+  Dark = "dark",
+}
+ Return only the JSON object (no extra text, no explanation).`,
 };
 
 export async function generateText(prompt: string): Promise<string> {
