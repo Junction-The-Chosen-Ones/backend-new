@@ -20,10 +20,19 @@ export async function generateText(prompt: string): Promise<string> {
 }
 
 // ------------------------------
-// Helper to extract first JSON array from AI output
+// Robust JSON array extractor
 // ------------------------------
 function extractJsonArray(raw: string): string {
-  const match = raw.match(/\[.*\]/s);
+  let cleaned = raw.trim();
+
+  // Remove possible code fences ```json or ```
+  cleaned = cleaned
+    .replace(/^```json/i, "")
+    .replace(/^```/, "")
+    .replace(/```$/, "")
+    .trim();
+
+  const match = cleaned.match(/\[.*\]/s);
   if (!match) throw new Error("No JSON array found in AI output");
   return match[0];
 }
@@ -32,21 +41,13 @@ function extractJsonArray(raw: string): string {
 // Generate Entities
 // ------------------------------
 export async function generateEntities(): Promise<Entity[]> {
+  const entitiesRaw = await generateText(prompts.entity_prompt);
+  const jsonString = extractJsonArray(entitiesRaw);
+
   try {
-    const entitiesRaw = await generateText(prompts.entity_prompt);
-    const jsonString = extractJsonArray(entitiesRaw);
-
-    let entities: Entity[];
-    try {
-      entities = JSON.parse(jsonString) as Entity[];
-    } catch (err) {
-      console.error("Failed to parse entities JSON:", jsonString);
-      throw err;
-    }
-
-    return entities;
+    return JSON.parse(jsonString) as Entity[];
   } catch (err) {
-    console.error("Error generating entities:", err);
+    console.error("Failed to parse entities JSON:", jsonString);
     throw err;
   }
 }
@@ -55,21 +56,14 @@ export async function generateEntities(): Promise<Entity[]> {
 // Generate Intro Story
 // ------------------------------
 export async function generateIntro(): Promise<string> {
-  try {
-    const intro = await generateText(prompts.story_intro_prompt);
-    return intro;
-  } catch (err) {
-    console.error("Error generating intro:", err);
-    throw err;
-  }
+  return generateText(prompts.story_intro_prompt);
 }
 
 // ------------------------------
 // Generate Dialogs
 // ------------------------------
 export async function generateDialogs(entities: Entity[]): Promise<Dialog[]> {
-  try {
-    const prompt = `
+  const prompt = `
 You are an API. Return ONLY valid JSON.
 No explanation, no comments, no extra text.
 
@@ -90,37 +84,34 @@ Rules:
 - characterId must match the "id" field from the entity JSON
 `;
 
-    const dialogsRaw = await generateText(prompt);
-    const jsonString = extractJsonArray(dialogsRaw);
+  const dialogsRaw = await generateText(prompt);
+  const jsonString = extractJsonArray(dialogsRaw);
 
-    let dialogs: Dialog[];
-    try {
-      dialogs = JSON.parse(jsonString) as Dialog[];
-    } catch (err) {
-      console.error("Failed to parse dialogs JSON:", jsonString);
-      throw err;
-    }
-
-    return dialogs;
+  try {
+    return JSON.parse(jsonString) as Dialog[];
   } catch (err) {
-    console.error("Error generating dialogs:", err);
+    console.error("Failed to parse dialogs JSON:", jsonString);
     throw err;
   }
 }
 
 // ------------------------------
-// Generate Full Story
+// Generate Full Story (optimized)
 // ------------------------------
 export const generateStory = async (): Promise<Story> => {
   try {
-    const entities = await generateEntities();
+    // Generate entities and intro in parallel (independent)
+    const [entities, context] = await Promise.all([
+      generateEntities(),
+      generateIntro(),
+    ]);
+
+    // Generate dialogs after entities are ready
     const dialogs = await generateDialogs(entities);
-    const context = await generateIntro();
-    console.log("Generated context:", entities);
-    console.log("Generated context:", context);
-    console.log("Generated dialogs:", dialogs);
 
     const story: Story = { entities, dialogs, context };
+
+    console.log("Story generated successfully");
     return story;
   } catch (err) {
     console.error("Error generating story:", err);
