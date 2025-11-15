@@ -3,6 +3,7 @@ import { gen } from "./router/generation.router";
 import cors from "@elysiajs/cors";
 import openapi from "@elysiajs/openapi";
 import { dataStore } from "./utils/memory_storage";
+import { cards } from "./router/cards.router";
 
 const port = process.env.PORT || 3000;
 async function fu() {
@@ -20,6 +21,7 @@ function main(): void {
   const app = new Elysia()
     .use(openapi())
     .use(cors())
+    .use(cards)
     .use(gen) // your /gen routes
     .get("/", () => "Hello Elysia")
     .listen(port);

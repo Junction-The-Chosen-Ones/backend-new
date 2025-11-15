@@ -1,25 +1,7 @@
 // generation.service.ts
-import { ai_conf } from "../config/openai";
 import { generateText, prompts } from "../utils/prompts";
 import { Entity, Dialog, Story } from "../models/models";
-
-// ------------------------------
-// Robust JSON array extractor
-// ------------------------------
-function extractJsonArray(raw: string): string {
-  let cleaned = raw.trim();
-
-  // Remove possible code fences ```json or ```
-  cleaned = cleaned
-    .replace(/^```json/i, "")
-    .replace(/^```/, "")
-    .replace(/```$/, "")
-    .trim();
-
-  const match = cleaned.match(/\[.*\]/s);
-  if (!match) throw new Error("No JSON array found in AI output");
-  return match[0];
-}
+import { extractJsonArray } from "../utils/json_utils";
 
 // ------------------------------
 // Generate Entities
