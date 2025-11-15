@@ -21,6 +21,7 @@ export interface Story {
 }
 // Enums
 export enum ActionType {
+  //example.com/sprites/berserker_rage.png
   Attack = "attack",
   Defend = "defend",
   Heal = "heal",
@@ -39,7 +40,7 @@ export interface Card {
   name: string;
   desc: string;
   cost: number;
-  cardType: ActionType[];
+  actionType: ActionType[];
   damageType: DamageType[];
   amount: number[];
   spriteLink: string;
