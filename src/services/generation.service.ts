@@ -1,23 +1,7 @@
 // generation.service.ts
 import { ai_conf } from "../config/openai";
-import { prompts } from "../utils/prompts";
+import { generateText, prompts } from "../utils/prompts";
 import { Entity, Dialog, Story } from "../models/models";
-
-// ------------------------------
-// AI Text generation helper
-// ------------------------------
-export async function generateText(prompt: string): Promise<string> {
-  const chatCompletions = await ai_conf.chat.completions.create({
-    model: "beyoru/Luna-Fusion-RP",
-    max_tokens: 4096,
-    messages: [
-      { role: "system", content: "You are a helpful assistant." },
-      { role: "user", content: prompt },
-    ],
-  });
-
-  return chatCompletions.choices[0].message?.content ?? "";
-}
 
 // ------------------------------
 // Robust JSON array extractor
