@@ -1,7 +1,7 @@
 import { ai_conf } from "../config/openai";
 
 export const prompts = {
-  entity_prompt: `Generate an array of 11 entities with the following properties as a JSON object:
+  entity_prompt: `Generate an array of 12 entities with the following properties as a JSON object:
  {
    "id": number,
    "name": string,
@@ -9,9 +9,10 @@ export const prompts = {
    "description": string,
    "attack": number,
    "defense": number,
-   "health": number
+   "health": number,
+   "is_boss": boolean;
  }
- 1 entity should have is_enemy set to false. the other are to true. Try to make the one that is false 20% higher attack, health, and defense values.
+ 1 entity should have is_enemy set to false and have 20% higher attack the other are to true. Also one of the other entities need to be a boss and have 40% more attributes., health, and defense values.
  Return only the JSON object (no extra text, no explanation).`,
   story_intro_prompt:
     "Generate a short introductory story for my FantasyDungeon crawler. I want 2 paragraphs of introduction in the lore of this game.",
@@ -45,7 +46,9 @@ and here are action types and damage types:
 }
  Return only the JSON object (no extra text, no explanation).`,
   card_img:
-    "generate me an image of a card with that will present this description",
+    "generate me an pixel art sprite of the size 30x16px of a card with that will present this description",
+  reinit_prompt:
+    "can you generate like a continuation for this json story files, change it but keep the same idea. Here is the json",
 };
 
 export async function generateText(prompt: string): Promise<string> {

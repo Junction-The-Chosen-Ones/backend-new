@@ -1,5 +1,6 @@
 import Elysia from "elysia";
 import { dataStore } from "../utils/memory_storage";
+import { generateText, prompts } from "../utils/prompts";
 
 // Initialize story at startup
 export const gen = new Elysia({ prefix: "/gen" })
@@ -55,5 +56,27 @@ export const gen = new Elysia({ prefix: "/gen" })
     } catch (error) {
       set.status = 500;
       return { error: "Failed to reset story", details: String(error) };
+    }
+  })
+  .get("/reinit", async ({ set }) => {
+    try {
+      const data = dataStore.getInstance();
+
+      return { data: data.story };
+    } catch (error) {
+      set.status = 500;
+      return { error: "Story not ready", details: String(error) };
+    }
+  })
+  .get("/reinit", async ({ set }) => {
+    try {
+      // Re-generate story + cards
+      const current = await dataStore.reinitialize();
+      console.log(current);
+      // Return ONLY the new story
+      return { data: current };
+    } catch (error) {
+      set.status = 500;
+      return { error: "Failed to reinitialize story", details: String(error) };
     }
   });

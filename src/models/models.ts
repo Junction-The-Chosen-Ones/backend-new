@@ -5,6 +5,7 @@ export interface Entity {
   attack: number;
   defense: number;
   health: number;
+  is_boos: boolean;
 }
 export interface Dialog {
   id: string;
@@ -13,12 +14,6 @@ export interface Dialog {
 }
 export interface Dialog extends Array<Dialog> {}
 
-// nodes: {
-//   id: string;
-//   parent?: string[] | null | undefined;
-//   children?: string[] | null | undefined;
-//   content: string;
-// };
 export interface Story {
   entities: Entity[];
   dialogs: Dialog[];

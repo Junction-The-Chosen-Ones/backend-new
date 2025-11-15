@@ -5,6 +5,7 @@ import { cards } from "./router/cards.router";
 import { gen } from "./router/generation.router";
 import { ping } from "./router/ping.route";
 import { dataStore } from "./utils/memory_storage";
+import { img } from "./router/image.router";
 
 const port = process.env.PORT || 3000;
 async function fu() {
@@ -23,6 +24,7 @@ function main(): void {
     .use(openapi())
     .use(cors())
     .use(cards)
+    .use(img)
     .use(gen) // your /gen routes
     .use(ping) // /ping and only ping
     .get("/", () => "Hello Elysia")
