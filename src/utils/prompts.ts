@@ -44,6 +44,8 @@ and here are action types and damage types:
   Dark = "dark",
 }
  Return only the JSON object (no extra text, no explanation).`,
+  card_img:
+    "generate me an image of a card with that will present this description",
 };
 
 export async function generateText(prompt: string): Promise<string> {
